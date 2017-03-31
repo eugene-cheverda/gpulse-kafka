@@ -1,0 +1,7 @@
+package pulse.kafka.client.producer
+
+import scala.collection.JavaConversions._
+
+object EnvelopeProducer {
+  def apply(properties: Map[String, String]): EnvelopeProducer = new EnvelopeProducer(properties)
+}
