@@ -1,5 +1,7 @@
 import sbt._, Keys._
 import dependencies._
+import pulse.plugin._
+import local.dependencies._
 
 libraryDependencies ++= Seq (
   cats.all,
@@ -12,3 +14,7 @@ libraryDependencies ++= Seq (
 )
 
 console.settings
+
+publishing.settings
+
+local.settings

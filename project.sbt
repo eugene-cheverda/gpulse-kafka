@@ -1,9 +1,15 @@
-organization in Global := "pulse"
+import pulse.plugin._
+
+organization in Global := "impulse-io"
 
 scalaVersion in Global := "2.11.8"
 
 settings.common
 
-lazy val kafka_client = project.in(file(".")).aggregate(producer)
+lazy val gpulse_kafka = project.in(file(".")).aggregate(producer)
 
 lazy val producer = project
+
+settings.common
+
+publishing.ignore
