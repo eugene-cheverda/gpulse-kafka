@@ -1,18 +1,15 @@
 package pulse.kafka.extensions
 
 import com.twitter.util.Promise
+import fs2.Strategy
 import org.apache.kafka.clients.producer.{RecordMetadata, Callback => KCallback}
-
-import scala.concurrent.ExecutionContext
 
 object Callback {
   import pulse.kafka.extensions.PromiseOps.onComplete
 
-  def apply(p: Promise[RecordMetadata])(implicit tp: ExecutionContext): KCallback = new KCallback {
+  def apply(p: Promise[RecordMetadata])(implicit strategy: Strategy): KCallback = new KCallback {
     override def onCompletion(metadata: RecordMetadata, exception: Exception): Unit = {
-      tp.execute(new Runnable {
-        override def run(): Unit = onComplete(p, metadata, exception)
-      })
+      strategy(onComplete(p, metadata, exception))
     }
   }
 }
