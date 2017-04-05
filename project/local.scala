@@ -36,10 +36,6 @@ object local {
       val core = "org.apache.avro" % "avro" % versions.avro
     }
 
-    object typesafe {
-      val config = "com.typesafe" % "config" % versions.typesafe
-    }
-
     object scopt {
       val core = "com.github.scopt" %% "scopt" % versions.scopt
     }
@@ -54,11 +50,6 @@ object local {
       val core    = "io.circe" %% "circe-core"    % versions.circe
       val generic = "io.circe" %% "circe-generic" % versions.circe
       val parser  = "io.circe" %% "circe-parser"  % versions.circe
-    }
-
-    object finagle {
-      val core   = "com.twitter" %% "finagle-http"   % versions.twitter.finagle
-      val server = "com.twitter" %% "twitter-server" % versions.twitter.server
     }
 
     object logback {

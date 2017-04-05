@@ -5,6 +5,9 @@ import pulse.common.syntax._
 
 
 class AppProducer(properties: Map[String, String]) extends Producer {
+  import pulse.kafka.extensions.catsStdInstancesForFuture
+  import pulse.kafka.extensions.managedEnvelopeProducer
+  import scala.concurrent.ExecutionContext.Implicits.global
   override def session(body: EnvelopeProducer => Future[ProducerResponse]) = use(EnvelopeProducer(properties)) {
     body
   }
