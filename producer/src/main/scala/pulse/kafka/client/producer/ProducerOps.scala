@@ -7,6 +7,7 @@ class ProducerOps(self: EnvelopeProducer) {
 
   import pulse.kafka.extensions.PromiseOps._
   import pulse.kafka.extensions.Strategies._
+  import pulse.kafka.extensions._
 
   def sendAsync(record: Envelope) = {
     toTwitter[RecordMetadata](p => {

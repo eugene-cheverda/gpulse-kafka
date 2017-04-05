@@ -1,6 +1,6 @@
 import sbt._, Keys._
-import dependencies._
 import pulse.plugin._
+import pulse.plugin.dependencies._
 import local.dependencies._
 
 libraryDependencies ++= Seq (
@@ -10,6 +10,7 @@ libraryDependencies ++= Seq (
   avro.core,
   typesafe.config,
   kafka.core,
+  pulse.common,
   _test(scalatest.core)
 )
 
