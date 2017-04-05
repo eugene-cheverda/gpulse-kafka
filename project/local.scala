@@ -83,6 +83,14 @@ object local {
     object log4s {
       val core = "org.log4s" %% "log4s" % versions.log4s
     }
+
+    object finagle {
+      val core   = "com.twitter" %% "finagle-http"   % versions.twitter.finagle
+    }
+
+    object typesafe {
+      val config = "com.typesafe" % "config" % versions.typesafe
+    }
   }
 
   def settings = Seq(
