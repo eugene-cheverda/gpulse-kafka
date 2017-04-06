@@ -12,6 +12,7 @@ before_script:
   fi
 - if [ $TRAVIS_PULL_REQUEST = 'false' ]; then git config --local user.email $GIT_USEREMAIL;
   fi
+- sh $TRAVIS_BUILD_DIR/bintray.sh
 script:
 - sbt test
 - find $HOME/.sbt -name "*.lock" | xargs rm
