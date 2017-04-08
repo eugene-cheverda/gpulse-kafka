@@ -7,22 +7,32 @@ import org.apache.avro.Schema
 import org.apache.avro.file.DataFileWriter
 import org.apache.avro.generic.{GenericDatumReader, GenericDatumWriter, GenericRecord}
 import org.apache.avro.io.DecoderFactory
+import pulse.kafka.extensions.managedByteArrayInputStream
+import pulse.kafka.extensions.managedByteArrayOutputStream
+import pulse.kafka.extensions.catsStdInstancesForFuture
+import scala.concurrent.ExecutionContext.Implicits._
 
 object AvroUtils {
 
   import pulse.common.syntax._
 
-  def jsonToAvroBytes(json: String, schemaFile: File): Future[Array[Byte]] = {
-    import pulse.kafka.extensions.managedByteArrayOutputStream
-    import scala.concurrent.ExecutionContext.Implicits._
-    import pulse.kafka.extensions.catsStdInstancesForFuture
-    use(new ByteArrayOutputStream())(output => {
+
+  def jsonToAvroBytes(json: String, schemaFile: File): Future[Array[Byte]] =
+    use(new ByteArrayOutputStream()) { output =>
       for {
         s <- loadSchema(schemaFile)
         _ <- convertImpl(json, output, s)
       } yield output.toByteArray
-    })
-  }
+    }
+
+  private def convertImpl(json: String, output: ByteArrayOutputStream, schemaSpec: Schema): Future[GenericDatumReader[GenericRecord]] =
+
+    use(new ByteArrayInputStream(json.getBytes)) { input =>
+      for {
+        w <- getWriter(output, schemaSpec)
+        r <- getReader(input, schemaSpec, w)
+      } yield r
+    }
 
   def getReader(input: ByteArrayInputStream, schemaSpec: Schema, w: DataFileWriter[GenericRecord]) = Future.value {
     val reader = new GenericDatumReader[GenericRecord](schemaSpec)
@@ -32,17 +42,8 @@ object AvroUtils {
     reader
   }
 
-  private def convertImpl(json: String, output: ByteArrayOutputStream, schemaSpec: Schema): Future[GenericDatumReader[GenericRecord]] = {
-    import pulse.kafka.extensions.managedByteArrayInputStream
-    import scala.concurrent.ExecutionContext.Implicits._
-    import pulse.kafka.extensions.catsStdInstancesForFuture
-    use(new ByteArrayInputStream(json.getBytes))(input => {
-      for {
-        w <- getWriter(output, schemaSpec)
-        r <- getReader(input, schemaSpec, w)
-      } yield r
-    })
-  }
+  private def getJsonDecoder(input: ByteArrayInputStream, schema: Schema) =
+    DecoderFactory.get.jsonDecoder(schema, new DataInputStream(input))
 
   private def getWriter(output: ByteArrayOutputStream, schemaSpec: Schema) = {
     Future.value {
@@ -51,12 +52,8 @@ object AvroUtils {
     }
   }
 
-  private def getJsonDecoder(input: ByteArrayInputStream, schema: Schema) =
-    DecoderFactory.get.jsonDecoder(schema, new DataInputStream(input))
-
   private def loadSchema(schemaFile: File): Future[Schema] =
-    Future.value {
+    Future {
       new Schema.Parser().parse(schemaFile)
     }
-
 }
